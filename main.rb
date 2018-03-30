@@ -47,7 +47,13 @@ EM.run do
         n,m = 4,5
         now = Time.now
         responseText = start_draw(n, m)
-        #"今は#{now.hour}時#{now.min}分#{now.sec}秒です。"
+    elsif  text == "使い方"
+        responseText = <<-EOS
+縦の数字　横の数字　の順で２マス指定してください
+例
+11 23
+EOS
+        
     end
     
     reply = {
@@ -56,7 +62,8 @@ EM.run do
         channel: msg['channel'],
     }
     puts "Replying: #{reply}"
-    ws.send(reply.to_json)
+    tab = ws.send(reply.to_json)
+    puts 
   end
 
   ws.on :close do |event|
