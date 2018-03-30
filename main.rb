@@ -5,6 +5,7 @@ require 'faye/websocket'
 require './local.rb'
 require './game/view.rb'
 require './game/emoji.rb'
+require './game/message.rb'
 
 require 'active_record'
 require 'mysql2'
@@ -45,21 +46,35 @@ EM.run do
         next
     end
     text = msg["text"]
-
+    team = Team.find($id)
+    n,m = 4,5
     if text =~ /start/ && !$start_flag
-        n,m = 4,5
+        
         $start_flag = true
         responseText = start_draw(n, m)
-        team = Team.find($id)
         team.borad = set_start(n*m)
+        team.ts = post_message(responseText,msg['channel'])
         team.save
+        responseText= ''
     elsif  text == "使い方"
         responseText = <<-EOS
 縦の数字　横の数字　の順で２マス指定してください
 例
 11 23
 EOS
-        
+    elsif text != nil && text.length ==5 && $start_flag
+        array = text.split(' ').map{|index| index.to_i}
+        numbers=[]
+        array.each do |num|
+            numbers.push((num/10-1)*m + num%10 -1)
+        end
+        bord = team.borad
+        bord = bord.split(' ').map{|index| index.to_i}
+        up_text=update_view(n,m,numbers,bord)
+        update_message(up_text,msg['channel'],team.ts)
+        sleep(3)
+        up_text=equivalence_evaluation(n,m,numbers,bord)
+        update_message(up_text,msg['channel'],team.ts)
     end
     
     reply = {
