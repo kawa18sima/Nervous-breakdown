@@ -4,6 +4,7 @@ require 'eventmachine'
 require 'faye/websocket'
 require './local.rb'
 require './game/view.rb'
+require './game/emoji.rb'
 
 require 'active_record'
 require 'mysql2'
@@ -25,6 +26,8 @@ resposeObj = JSON.parse(response.body)
 
 url = resposeObj['url']
 responseText = "" 
+$start_flag = false
+$id = 1
 
 EM.run do
   puts "Connecting to #{url}..."
@@ -43,10 +46,13 @@ EM.run do
     end
     text = msg["text"]
 
-    if text =~ /start/
+    if text =~ /start/ && !$start_flag
         n,m = 4,5
-        now = Time.now
+        $start_flag = true
         responseText = start_draw(n, m)
+        team = Team.find($id)
+        team.borad = set_start(n*m)
+        team.save
     elsif  text == "使い方"
         responseText = <<-EOS
 縦の数字　横の数字　の順で２マス指定してください
