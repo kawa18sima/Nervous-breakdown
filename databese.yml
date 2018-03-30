@@ -1,6 +1,0 @@
-dapter: mysql2
-  database: pelmanism
-  host: localhost
-  username: root
-  password: 
-  encoding: utf8

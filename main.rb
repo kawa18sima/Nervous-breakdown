@@ -2,15 +2,14 @@ require 'http'
 require 'json'
 require 'eventmachine'
 require 'faye/websocket'
-require 'local.rb'
+require './local.rb'
 
 require 'active_record'
 require 'mysql2'
 
-#xoxb-338578579395-jOoCWDG9f6tpRMZfCGeDZGGS
 
 ActiveRecord::Base.configurations = YAML.load_file('database.yml')
-ActiveRecord::Base.establish_connection('development')
+ActiveRecord::Base.establish_connection(:development)
 
 class User < ActiveRecord::Base
 end
