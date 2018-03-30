@@ -53,7 +53,7 @@ def update_view(n,m,numbers,bord)
         text += "#{i+1}"
         m.times do |j|
             if bord[i*m+j]<0
-                text +="       "
+                text +=":x: "
             elsif numbers[0] == i*m+j || numbers[1] == i*m+j
                 text += "#{$emoji[bord[i*m+j]]} "
             else
@@ -72,7 +72,7 @@ def equivalence_evaluation(n,m,numbers,bord)
         text += "#{i+1}"
         m.times do |j|
             if bord[i*m+j]<0
-                text +="       "
+                text +=":x: "
             else
                 text += ":slack: "
             end
