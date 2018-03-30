@@ -3,6 +3,10 @@ require 'json'
 require 'eventmachine'
 require 'faye/websocket'
 require './local.rb'
+require './game/view.rb'
+require './game/emoji.rb'
+require './game/message.rb'
+require './game/fin.rb'
 
 require 'active_record'
 require 'mysql2'
@@ -23,6 +27,9 @@ response = HTTP.get("https://slack.com/api/rtm.connect", params: {token: TOKEN})
 resposeObj = JSON.parse(response.body)
 
 url = resposeObj['url']
+responseText = "" 
+$start_flag = false
+$id = 1
 
 EM.run do
   puts "Connecting to #{url}..."
@@ -40,27 +47,50 @@ EM.run do
         next
     end
     text = msg["text"]
-
-    if text =~ /何時/
-        now = Time.now
-        responseText = "今は#{now.hour}時#{now.min}分#{now.sec}秒です。"
-    elsif text =~ /今日/
-        today = Time.now
-        responseText = "今日は#{today.year}年#{today.month}月#{today.day}日です。"
-    elsif text =~ /明日/
-        tomorrow = Time.now + (60*60*24)
-        responseText = "明日は#{tomorrow.year}年#{tomorrow.month}月#{tomorrow.day}日です。"
-    else
-        responseText = "例: 何時 / 今日 / 明日"
+    team = Team.find($id)
+    n,m = 4,5
+    if text =~ /start/ && !$start_flag
+        
+        $start_flag = true
+        responseText = start_draw(n, m)
+        team.borad = set_start(n*m)
+        team.ts = post_message(responseText,msg['channel'])
+        team.save
+        responseText= ''
+    elsif  text == "使い方"
+        responseText = <<-EOS
+縦の数字　横の数字　の順で２マス指定してください
+例
+11 23
+EOS
+    elsif text != nil && text.length ==5 && $start_flag
+        array = text.split(' ').map{|index| index.to_i}
+        numbers=[]
+        array.each do |num|
+            numbers.push((num/10-1)*m + num%10 -1)
+        end
+        bord = team.borad
+        bord = bord.split(' ').map{|index| index.to_i}
+        up_text=update_view(n,m,numbers,bord)
+        update_message(up_text,msg['channel'],team.ts)
+        sleep(3)
+        up_text=equivalence_evaluation(n,m,numbers,bord)
+        update_message(up_text,msg['channel'],team.ts)
+        delete_message(msg['ts'],msg['channel'])
     end
-    
+    team = Team.find($id)
+    if finish_game(team.borad, n*m) && $start_flag
+        $start_flag = false
+        responseText = 'ゲーム終了'
+    end
     reply = {
         type: 'message',
         text: responseText,
         channel: msg['channel'],
     }
     puts "Replying: #{reply}"
-    ws.send(reply.to_json)
+    tab = ws.send(reply.to_json)
+    puts 
   end
 
   ws.on :close do |event|
