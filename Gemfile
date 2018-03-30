@@ -9,4 +9,4 @@ gem "activerecord"
 gem "mysql2"
 gem "sinatra"
 gem 'faye-websocket'
-
+gem 'slack-api'

@@ -1,4 +1,5 @@
 require 'http'
+require 'net/http'
 require 'json'
 require 'eventmachine'
 require 'faye/websocket'
@@ -51,10 +52,12 @@ EM.run do
     team = Team.find($id)
     n,m = 4,5
     if text =~ /start/ && !$start_flag
-        create_team('game1')
+        # create_team('game1')
+        getplayerlist()
+        team_allocation()
         $start_flag = true
+        
         responseText = start_draw(n, m)
-        team.borad = set_start(n*m)
         team.ts = post_message(responseText,msg['channel'])
         team.save
         responseText= ''
