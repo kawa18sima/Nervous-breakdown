@@ -6,6 +6,7 @@ require './local.rb'
 require './game/view.rb'
 require './game/emoji.rb'
 require './game/message.rb'
+require './game/fin.rb'
 
 require 'active_record'
 require 'mysql2'
@@ -76,7 +77,11 @@ EOS
         up_text=equivalence_evaluation(n,m,numbers,bord)
         update_message(up_text,msg['channel'],team.ts)
     end
-    
+    team = Team.find($id)
+    if finish_game(team.borad, n*m)
+        $start_flag = false
+        responseText = 'ゲーム終了'
+    end
     reply = {
         type: 'message',
         text: responseText,
