@@ -76,9 +76,10 @@ EOS
         sleep(3)
         up_text=equivalence_evaluation(n,m,numbers,bord)
         update_message(up_text,msg['channel'],team.ts)
+        delete_message(msg['ts'],msg['channel'])
     end
     team = Team.find($id)
-    if finish_game(team.borad, n*m)
+    if finish_game(team.borad, n*m) && $start_flag
         $start_flag = false
         responseText = 'ゲーム終了'
     end

@@ -7,3 +7,7 @@ def post_message(text,channel)
     resposeObj = JSON.parse(response.body)
     return resposeObj['ts']
 end
+
+def delete_message(ts, channel)
+    response = HTTP.post("https://slack.com/api/chat.delete", params: {token: TOKEN,channel: channel, ts: ts,as_user: true})
+end
