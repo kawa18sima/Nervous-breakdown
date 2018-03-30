@@ -7,6 +7,7 @@ require './game/view.rb'
 require './game/emoji.rb'
 require './game/message.rb'
 require './game/fin.rb'
+require './group/group.rb'
 
 require 'active_record'
 require 'mysql2'
@@ -50,7 +51,7 @@ EM.run do
     team = Team.find($id)
     n,m = 4,5
     if text =~ /start/ && !$start_flag
-        
+        create_team('game1')
         $start_flag = true
         responseText = start_draw(n, m)
         team.borad = set_start(n*m)
@@ -63,7 +64,7 @@ EM.run do
 例
 11 23
 EOS
-    elsif text != nil && text.length ==5 && $start_flag
+    elsif $start_flag && text != nil && text.length ==5
         array = text.split(' ').map{|index| index.to_i}
         numbers=[]
         array.each do |num|
