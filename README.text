@@ -1,0 +1,34 @@
+# Nervous-breakdown
+slack上で神経衰弱ができます。
+
+local.rbにトークン関係は追加してください。
+
+TOKENはBot User OAuth Access Token
+USERTOKENは　OAuth Access Token
+ADTOKENは　テスターのトークンです。
+
+
+
++---------+--------------+------+-----+---------+----------------+
+| Field   | Type         | Null | Key | Default | Extra          |
++---------+--------------+------+-----+---------+----------------+
+| id      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| name    | varchar(255) | YES  |     | NULL    |                |
+| team_id | int(11)      | YES  |     | NULL    |                |
++---------+--------------+------+-----+---------+----------------+
+
++--------+------------------+------+-----+---------+----------------+
+| Field  | Type             | Null | Key | Default | Extra          |
++--------+------------------+------+-----+---------+----------------+
+| id     | int(10) unsigned | NO   | PRI | NULL    | auto_increment |
+| people | int(11)          | YES  |     | NULL    |                |<- チームの人数
+| borad  | varchar(100)     | YES  |     | NULL    |                |<-盤面
+| ts     | varchar(50)      | YES  |     | NULL    |                |<-盤面メッセージのタイムスタンプ
++--------+------------------+------+-----+---------+----------------+
+
+
+
+bundle install
+
+ruby main.rb
+
